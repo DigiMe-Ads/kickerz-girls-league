@@ -5,7 +5,7 @@ export const ORGANISER = 'Colombo Kickerz Football Academy'
 export const RULES = [
   'Played 5v5 under futsal rules & standards, squads of up to 8 players.',
   "The referee's decision is final during all matches.",
-  'U15 matches are 15 minutes and U13 matches are 8 minutes, with no half time or break.',
+  'U15 matches are 15 minutes and U13 matches are 12 minutes, with no half-time or break.',
   'Teams must be at the venue 15 minutes before kick-off.',
   'A 3-minute delay to a game is a walkover: 3 points and 3 goals to the opposition.',
   'Players attend in their college or academy uniform, with one kit colour per team.',

@@ -49,6 +49,7 @@ create table if not exists public.teams (
   created_at timestamptz not null default now()
 );
 create index if not exists teams_tournament_idx on public.teams (tournament_id);
+alter table public.teams add column if not exists logo_url text;
 
 create table if not exists public.matches (
   id uuid primary key default gen_random_uuid(),
@@ -96,3 +97,22 @@ begin
     end if;
   end loop;
 end $$;
+
+-- ── Team logos (Storage) ─────────────────────────────────────────
+-- Public bucket: anyone can view logos, only admins can upload/replace/remove.
+insert into storage.buckets (id, name, public, file_size_limit, allowed_mime_types)
+values ('team-logos', 'team-logos', true, 2097152, array['image/png', 'image/jpeg', 'image/webp', 'image/svg+xml', 'image/gif'])
+on conflict (id) do update set
+  public = excluded.public,
+  file_size_limit = excluded.file_size_limit,
+  allowed_mime_types = excluded.allowed_mime_types;
+
+drop policy if exists "team logos admin insert" on storage.objects;
+create policy "team logos admin insert" on storage.objects for insert to authenticated
+  with check (bucket_id = 'team-logos' and public.is_admin());
+drop policy if exists "team logos admin update" on storage.objects;
+create policy "team logos admin update" on storage.objects for update to authenticated
+  using (bucket_id = 'team-logos' and public.is_admin());
+drop policy if exists "team logos admin delete" on storage.objects;
+create policy "team logos admin delete" on storage.objects for delete to authenticated
+  using (bucket_id = 'team-logos' and public.is_admin());

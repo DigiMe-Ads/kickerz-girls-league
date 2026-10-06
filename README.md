@@ -17,7 +17,7 @@ npm run dev
 
 ## Database
 
-`supabase/schema.sql` creates the tables (`tournaments`, `teams`, `matches`, `admins`), the security rules and live updates.
+`supabase/schema.sql` creates the tables (`tournaments`, `teams`, `matches`, `admins`), the security rules, live updates and the `team-logos` storage bucket.
 `supabase/seed.sql` adds the two 2026 match days: U15 on 7 Oct and U13 on 14 Oct.
 Both are already applied to the project. You can safely run them again in the Supabase SQL editor.
 
@@ -28,13 +28,13 @@ Security: anyone can **read**. Only emails listed in `public.admins` can **write
 1. Supabase dashboard → Authentication → Users → **Add user**. Enter an email and password and tick "Auto confirm".
 2. SQL editor:
    ```sql
-   insert into public.admins (email) values ('organiser@example.com');
+   insert into public.admins (email) values ('admin@kickerz.com');
    ```
 3. Recommended: Authentication → Sign In / Providers → turn off **Allow new users to sign up**.
 
 ## Match-day workflow
 
-1. **Teams & draw:** add each team as it comes out of the physical draw. The draw number is set automatically, and you can reorder with the arrows. "Paste many" adds a whole list at once.
+1. **Teams & draw:** add each team as it comes out of the physical draw. The draw number is set automatically, and you can reorder with the arrows. "Paste many" adds a whole list at once. Each team can also have an optional **logo** (the image button on a team, or "Add logo" when adding one). The team colour stays as a ring around the logo, so a club's A and B teams can share a logo and still look different.
 2. **Fixtures:** you have two options.
    - Click the pairings in the order you want. Each one goes to the next free court: Court 1 and Court 2 of a game kick off together.
    - Or click **Auto-build from draw order**. This makes a full round-robin with no team on both courts at once and as few back-to-back games as possible.

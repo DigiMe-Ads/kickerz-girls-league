@@ -2,7 +2,7 @@ import { AnimatePresence } from 'motion/react'
 import AddTeamsForm from './AddTeamsForm'
 import TeamRow from './TeamRow'
 import { useAction } from '../../hooks/useToast'
-import { addTeams, deleteTeam, updateTeam } from '../../lib/api'
+import { addTeams, deleteTeam, removeTeamLogo, updateTeam } from '../../lib/api'
 
 export default function TeamManager({ tournament, teams, matches, refresh }) {
   const run = useAction()
@@ -15,7 +15,9 @@ export default function TeamManager({ tournament, teams, matches, refresh }) {
   }
 
   async function handleUpdate(id, values) {
-    await run(() => updateTeam(id, values), 'Team saved')
+    const old = teams.find((t) => t.id === id)?.logo_url
+    const ok = await run(() => updateTeam(id, values).then(() => true), 'Team saved')
+    if (ok && 'logo_url' in values && old && old !== values.logo_url) removeTeamLogo(old).catch(() => {})
     refresh()
   }
 
@@ -33,7 +35,8 @@ export default function TeamManager({ tournament, teams, matches, refresh }) {
     const count = matches.filter((m) => m.home_team_id === team.id || m.away_team_id === team.id).length
     const extra = count ? ` Their ${count} match${count > 1 ? 'es' : ''} will be removed too.` : ''
     if (!confirm(`Remove ${team.name}?${extra}`)) return
-    await run(() => deleteTeam(team.id), `${team.name} removed`)
+    const ok = await run(() => deleteTeam(team.id).then(() => true), `${team.name} removed`)
+    if (ok && team.logo_url) removeTeamLogo(team.logo_url).catch(() => {})
     // Close the gap in draw numbers.
     await Promise.all(
       teams

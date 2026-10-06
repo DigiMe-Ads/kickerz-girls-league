@@ -56,6 +56,23 @@ export async function deleteTeam(id) {
   return unwrap(await supabase.from('teams').delete().eq('id', id))
 }
 
+// ── Team logos (Storage) ───────────────────────────────────
+const LOGO_BUCKET = 'team-logos'
+
+// Uploads an image and returns its public URL.
+export async function uploadTeamLogo(file) {
+  const ext = (file.name.split('.').pop() || 'png').toLowerCase()
+  const path = `${crypto.randomUUID()}.${ext}`
+  unwrap(await supabase.storage.from(LOGO_BUCKET).upload(path, file, { contentType: file.type, cacheControl: '31536000' }))
+  return supabase.storage.from(LOGO_BUCKET).getPublicUrl(path).data.publicUrl
+}
+
+// Best-effort cleanup of a logo that's no longer used.
+export async function removeTeamLogo(url) {
+  const path = url?.split(`/${LOGO_BUCKET}/`)[1]
+  if (path) await supabase.storage.from(LOGO_BUCKET).remove([path])
+}
+
 // ── Matches ────────────────────────────────────────────────
 export async function listMatches(tournamentId) {
   return unwrap(

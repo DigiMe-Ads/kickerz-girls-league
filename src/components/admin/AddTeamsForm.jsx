@@ -1,20 +1,23 @@
 import { useState } from 'react'
 import { ListPlus, Plus } from 'lucide-react'
 import Button from '../ui/Button'
+import LogoPicker from './LogoPicker'
 import { TEAM_COLORS } from '../../lib/format'
 
 // Add one team at a time as they come out of the draw, or paste a whole list.
 export default function AddTeamsForm({ nextDrawNo, onAdd }) {
   const [name, setName] = useState('')
   const [color, setColor] = useState(TEAM_COLORS[(nextDrawNo - 1) % TEAM_COLORS.length])
+  const [logoUrl, setLogoUrl] = useState(null)
   const [bulk, setBulk] = useState(false)
   const [list, setList] = useState('')
 
   async function addOne(e) {
     e.preventDefault()
     if (!name.trim()) return
-    await onAdd([{ name: name.trim(), color }])
+    await onAdd([{ name: name.trim(), color, logo_url: logoUrl }])
     setName('')
+    setLogoUrl(null)
     setColor(TEAM_COLORS[nextDrawNo % TEAM_COLORS.length])
   }
 
@@ -61,6 +64,7 @@ export default function AddTeamsForm({ nextDrawNo, onAdd }) {
             autoFocus
           />
           <ColorPicker value={color} onChange={setColor} />
+          <LogoPicker value={logoUrl} onChange={setLogoUrl} />
           <Button type="submit" icon={Plus} className="w-full" disabled={!name.trim()}>
             Add to draw
           </Button>

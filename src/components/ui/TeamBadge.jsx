@@ -2,9 +2,9 @@ import { contrastText, initials } from '../../lib/format'
 import { isLightLogo } from '../../lib/logo'
 
 const SIZES = {
-  sm: 'size-8 text-xs',
-  md: 'size-11 text-sm',
-  lg: 'size-16 text-xl',
+  sm: 'size-9 text-xs',
+  md: 'size-13 text-sm',
+  lg: 'size-18 text-xl',
 }
 
 const LOGO_BORDER = { sm: 3, md: 4, lg: 5 }
@@ -22,7 +22,7 @@ export default function TeamBadge({ team, size = 'md', className = '' }) {
         style={{ border: `${LOGO_BORDER[size]}px solid ${color}` }}
         title={team.name}
       >
-        <img src={team.logo_url} alt={team.name} className="size-full object-contain p-[8%]" loading="lazy" />
+        <img src={team.logo_url} alt={team.name} className="size-full object-contain p-[5%]" loading="lazy" />
       </span>
     )
   }

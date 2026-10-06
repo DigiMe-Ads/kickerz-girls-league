@@ -2,8 +2,10 @@ import { useRef, useState } from 'react'
 import { ImagePlus, Loader2, X } from 'lucide-react'
 import { useToast } from '../../hooks/useToast'
 import { uploadTeamLogo } from '../../lib/api'
+import { isLightLogo } from '../../lib/logo'
 
-const MAX_BYTES = 2 * 1024 * 1024
+// Big files are fine: they're trimmed and shrunk before upload.
+const MAX_BYTES = 15 * 1024 * 1024
 
 // Optional team logo: uploads straight to Storage and hands back the public URL.
 export default function LogoPicker({ value, onChange }) {
@@ -16,7 +18,7 @@ export default function LogoPicker({ value, onChange }) {
     e.target.value = ''
     if (!file) return
     if (!file.type.startsWith('image/')) return toast('Please choose an image file', 'error')
-    if (file.size > MAX_BYTES) return toast('Logo must be under 2 MB', 'error')
+    if (file.size > MAX_BYTES) return toast('Logo must be under 15 MB', 'error')
     setBusy(true)
     try {
       onChange(await uploadTeamLogo(file))
@@ -39,7 +41,7 @@ export default function LogoPicker({ value, onChange }) {
         {busy ? (
           <Loader2 className="size-4 animate-spin" />
         ) : value ? (
-          <img src={value} alt="" className="size-5 rounded-full object-contain" />
+          <img src={value} alt="" className={`size-5 rounded-full object-contain ${isLightLogo(value) ? 'bg-navy' : ''}`} />
         ) : (
           <ImagePlus className="size-4" />
         )}

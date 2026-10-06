@@ -1,4 +1,5 @@
 import { supabase } from './supabase'
+import { logoFileName, prepareLogo } from './logo'
 
 function unwrap({ data, error }) {
   if (error) throw error
@@ -59,11 +60,12 @@ export async function deleteTeam(id) {
 // ── Team logos (Storage) ───────────────────────────────────
 const LOGO_BUCKET = 'team-logos'
 
-// Uploads an image and returns its public URL.
+// Trims and shrinks an image, uploads it and returns its public URL.
 export async function uploadTeamLogo(file) {
-  const ext = (file.name.split('.').pop() || 'png').toLowerCase()
-  const path = `${crypto.randomUUID()}.${ext}`
-  unwrap(await supabase.storage.from(LOGO_BUCKET).upload(path, file, { contentType: file.type, cacheControl: '31536000' }))
+  const { blob, ext, light } = await prepareLogo(file)
+  if (blob.size > 2 * 1024 * 1024) throw new Error('Logo must be under 2 MB')
+  const path = logoFileName(crypto.randomUUID(), ext, light)
+  unwrap(await supabase.storage.from(LOGO_BUCKET).upload(path, blob, { contentType: blob.type || file.type, cacheControl: '31536000' }))
   return supabase.storage.from(LOGO_BUCKET).getPublicUrl(path).data.publicUrl
 }
 

@@ -1,4 +1,5 @@
 import { contrastText, initials } from '../../lib/format'
+import { isLightLogo } from '../../lib/logo'
 
 const SIZES = {
   sm: 'size-8 text-xs',
@@ -17,7 +18,7 @@ export default function TeamBadge({ team, size = 'md', className = '' }) {
   if (team?.logo_url) {
     return (
       <span
-        className={`${base} overflow-hidden bg-white`}
+        className={`${base} overflow-hidden ${isLightLogo(team.logo_url) ? 'bg-navy' : 'bg-white'}`}
         style={{ border: `${LOGO_BORDER[size]}px solid ${color}` }}
         title={team.name}
       >
